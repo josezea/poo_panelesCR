@@ -1,5 +1,5 @@
 ---
-title: "Untitled"
+title: "POO paneles Costa Rica"
 author: "José Fernando Zea"
 date: "2024-09-16"
 output: html_document
@@ -344,7 +344,7 @@ f_CreaSegmento_AsignaPanelSegmento <- function(marco, str_idUPM){
 
 Crear en cada UPM segmentos, posteriormente asignar paneles a cada uno de los segmentos:
 
-Ejecución dura aproximadamente 
+La ejecución dura aproximadamente 7 minutos:
 
 ```{r}
 tic()
@@ -359,7 +359,7 @@ df_creacionSegmentos <- bind_rows(lapply(lst_SegmentosaPanelesCadaUPM, function(
 df_asignaPanelSegmento <- bind_rows(lapply(lst_SegmentosaPanelesCadaUPM, function(sublista) sublista[[2]]))
 
 df_correlativaSegmentoPanel <- bind_rows(lapply(lst_SegmentosaPanelesCadaUPM, function(sublista) sublista[[2]]))
-tic()
+toc()
 ```
 
 
@@ -367,17 +367,20 @@ Guardar los resultados
 
 
 ```{r}
+# Si exsiste carpeta no la crea
+dir.create("output")
+```
+
+```{r}
 setwd("output")
-saveRS(df_creacionSegmentos, "df_creacionSegmentos.Rds")
-saveRS(df_asignaPanelSegmento, "df_asignaPanelSegmento.Rds")
-saveRS(df_correlativaSegmentoPanel, "df_correlativaSegmentoPanel.Rds")
+saveRDS(df_creacionSegmentos, "df_creacionSegmentos.Rds")
+saveRDS(df_asignaPanelSegmento, "df_asignaPanelSegmento.Rds")
+saveRDS(df_correlativaSegmentoPanel, "df_correlativaSegmentoPanel.Rds")
 saveRDS(df_upmEnpaneles_consolidado, "df_upmEnpaneles_consolidado.Rds")
 
 write_xlsx(df_creacionSegmentos, "df_creacionSegmentos.xlsx")
 write_xlsx(df_asignaPanelSegmento, "df_asignaPanelSegmento.xlsx")
 write_xlsx(df_correlativaSegmentoPanel, "df_correlativaSegmentoPanel.xlsx")
 write_xlsx(df_upmEnpaneles_consolidado, "df_upmEnpaneles_consolidado.xlsx")
-
-
 ```
 
