@@ -1,0 +1,108 @@
+---
+title: "Insumos Rotacion Costa Rica 2024"
+author: "José Fernando Zea"
+date: "2024-09-30"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r, warning=FALSE, message=FALSE}
+library(dplyr)
+```
+
+
+
+
+
+# Creación de insumos
+
+Vamos a simular una estructura poblacional similar a la de Costa Rica, simularemos UPM's entre 100 a 200 vivienda en cada UPM:
+
+```{r}
+N_upm <- 10900
+upm <- paste0("UPM", stringr::str_pad(1:N_upm, width = 5, side = "left", pad = "0"))
+```
+
+
+```{r}
+# Number of UPMs
+num_upms <- length(upm)
+
+# Simulate between 100 and 200 households for each UPM
+set.seed(20092024)  # Optional: for reproducibility
+semillas <- sample(1:1000000, N_upm)
+
+# Print the number of households per UPM
+lst_marcoSintetico <- vector(mode = "list", length = num_upms)
+  
+for (i in 1:num_upms) {
+  set.seed(semillas[i])  # Optional: for reproducibility
+  num_households <- round(runif(1,156, 200))
+  
+  UPM <- rep(upm[i], num_households)
+  VIV <- stringr::str_pad(1:num_households, width = 3, side = "left", pad = "0")
+  VIV <- paste0(UPM, "_", VIV)
+  df_marcoSintetico <- data.frame(UPM, VIV)
+  lst_marcoSintetico[[i]] <- df_marcoSintetico
+}
+names(lst_marcoSintetico) <- paste0("UPM_",  upm)
+df_marcoSintetico <- bind_rows(lst_marcoSintetico)
+
+UPM <- NULL
+VIV <- NULL
+```
+
+Tamaño esperado de cada UPM:
+
+```{r}
+#sapply(lst_marcoSintetico, FUN = nrow)
+lst_marcoSintetico <- NULL
+```
+
+
+
+
+Insumo de las UPM, asumamos que tenemos las UPMs seleccionadas:
+
+```{r}
+vctr_paneles_refresco <- c("C03", "E05", "B06", "D08", "A09", "C11", "E13")
+num_upm_panelesRefresco <- 167 * vctr_paneles_refresco %>% length()
+```
+
+
+```{r}
+# 1 son UPM para paneles para pivotales, 2 para el resto de paneles
+df_upm <- data.frame(id_upm = upm, aleatorio = runif(n = length(upm))) 
+df_upm <- df_upm %>% arrange(aleatorio) %>% 
+  mutate(indica_seleccion = c(rep(1, 2505), rep(2, num_upm_panelesRefresco),
+                              rep(0, nrow(df_upm) - 2505 - num_upm_panelesRefresco)))
+df_upm$aleatorio <- NULL
+```
+
+
+```{r}
+table(df_upm$indica_seleccion, useNA = "a")
+```
+
+
+Guardamos los insumos
+
+
+```{r}
+setwd("data")
+saveRDS(df_upm, "DFupm_pocCR.Rds")
+saveRDS(df_marcoSintetico, "DFmarcoSintetico_pocCR.Rds")
+
+```
+
